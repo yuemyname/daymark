@@ -33,17 +33,15 @@ function range(rng: () => number, min: number, max: number): number {
   return min + rng() * (max - min);
 }
 
-const SCHEMES = ['analogous', 'split-complementary', 'triad', 'mono'] as const;
+// 차분한 톤 유지를 위해 보색 계열(split-complementary, triad)은 뺐다.
+// 색조가 h0 주변에만 머물러야 블루·그린 계열이 유지된다.
+const SCHEMES = ['analogous', 'mono'] as const;
 type Scheme = (typeof SCHEMES)[number];
 
 function schemeHues(scheme: Scheme, h0: number): number[] {
   switch (scheme) {
     case 'analogous':
       return [h0 - 30, h0, h0 + 30];
-    case 'split-complementary':
-      return [h0, h0 + 150, h0 - 150];
-    case 'triad':
-      return [h0, h0 + 120, h0 - 120];
     case 'mono':
       return [h0 - 8, h0, h0 + 8];
   }
@@ -69,8 +67,8 @@ export function paletteFor(rng: () => number): Palette {
   const r = rng();
   const mode: PaletteMode = r < 0.2 ? 'dark' : r < 0.6 ? 'paper' : 'light';
 
-  // 2. 기저 색조
-  const h0 = rng() * 360;
+  // 2. 기저 색조 — 블루·그린 계열 [140°, 270°) (초록 → 청록 → 파랑)
+  const h0 = 140 + rng() * 130;
 
   // 3. 배색 방식
   const scheme = pick(rng, SCHEMES);
@@ -91,7 +89,8 @@ export function paletteFor(rng: () => number): Palette {
   const inks: OklchInk[] = [];
   for (let i = 0; i < inkCount; i++) {
     const h = norm360(pick(rng, hues) + range(rng, -6, 6));
-    const c = range(rng, 0.08, 0.2);
+    // 파스텔/차분 — 채도를 낮게 유지한다
+    const c = range(rng, 0.04, 0.1);
     const rawL = mode === 'dark' ? range(rng, 0.6, 0.88) : range(rng, 0.22, 0.55);
     inks.push({ l: enforceDeltaL(rawL, bgL), c, h });
   }
