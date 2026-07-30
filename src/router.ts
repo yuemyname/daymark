@@ -1,22 +1,15 @@
-// 해시 라우터 — GitHub Pages(하위 경로)와 Netlify 어디서든 서버 설정 없이 동작한다.
-//   #/            오늘 (기본)
-//   #/archive     아카이브
-//   #/d/2026-07-30T21:37   판 상세 (공백 대신 T)
+// 해시 라우터 — GitHub Pages 하위 경로에서도 서버 설정 없이 동작한다.
+//   #/                      지금 (기본)
+//   #/t/2026-07-30T14:23:07 판 상세 (퍼머링크)
 
-export type Route =
-  | { name: 'today' }
-  | { name: 'archive' }
-  | { name: 'plate'; key: string };
+export type Route = { name: 'now' } | { name: 'plate'; ts: string };
 
 export function parseRoute(hash: string = location.hash): Route {
   const h = hash.replace(/^#\/?/, '');
-  if (h === 'archive') return { name: 'archive' };
-  if (h.startsWith('d/')) {
-    return { name: 'plate', key: decodeURIComponent(h.slice(2)).replace('T', ' ') };
-  }
-  return { name: 'today' };
+  if (h.startsWith('t/')) return { name: 'plate', ts: decodeURIComponent(h.slice(2)) };
+  return { name: 'now' };
 }
 
-export function plateHash(key: string): string {
-  return `#/d/${key.replace(' ', 'T')}`;
+export function plateHash(ts: string): string {
+  return `#/t/${ts}`;
 }

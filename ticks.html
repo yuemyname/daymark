@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>daymark — 60틱 미리보기 (개발용)</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: ui-monospace, monospace;
+        background: #fff;
+        color: #222;
+      }
+      h2 {
+        font-size: 14px;
+        margin: 24px 0 8px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+        gap: 8px;
+      }
+      .tile canvas {
+        width: 100%;
+        aspect-ratio: 1;
+        display: block;
+        border: 1px solid #eee;
+      }
+      .tile .label {
+        font-size: 9px;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 style="font-size: 16px">60틱 미리보기 — ?m=YYYY-MM-DDTHH:mm 로 분 지정</h1>
+    <h2>A. 1분치 60장 (초 위상이 매끄러운가)</h2>
+    <div class="grid" id="grid-minute"></div>
+    <h2>B. 1시간치 60장 — 매 분 :00 (분 경계 재추첨이 지나치게 튀지 않는가)</h2>
+    <div class="grid" id="grid-hour"></div>
+    <script type="module" src="/src/dev/ticks.ts"></script>
+  </body>
+</html>

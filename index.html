@@ -11,43 +11,22 @@
       rel="stylesheet"
     />
     <style>
-      :root {
-        --accent: #888;
-        --ink: #222;
-        --muted: #767676;
-      }
+      /* SPEC §11.1 — 화면 전체가 흑백. 크롬에 색 0. 강조는 굵기와 여백으로만 */
       body {
         margin: 0;
         font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-        background: #ffffff;
-        color: var(--ink);
+        background: #fff;
+        color: #111;
         min-height: 100vh;
+        transition:
+          background 0.4s linear,
+          color 0.4s linear;
       }
       header {
         position: fixed;
         top: 22px;
         left: 26px;
-        right: 26px;
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
         z-index: 10;
-        pointer-events: none;
-      }
-      header a,
-      header h1 {
-        pointer-events: auto;
-      }
-      nav a {
-        font-size: 12px;
-        color: var(--muted);
-        text-decoration: none;
-        letter-spacing: 0.08em;
-        border-bottom: 1px solid var(--accent);
-        padding-bottom: 1px;
-      }
-      nav a:hover {
-        color: var(--ink);
       }
       .brand {
         font-family: 'Fraunces', serif;
@@ -56,153 +35,122 @@
         font-size: 21px;
         margin: 0;
         letter-spacing: 0.01em;
-        color: var(--ink);
       }
-      .brand::after {
-        content: '.';
-        color: var(--accent);
+      .brand a {
+        color: inherit;
+        text-decoration: none;
       }
       #app {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
-        padding: 84px 24px 48px;
-        max-width: 1100px;
+        gap: 12px;
+        padding: 72px 24px 48px;
+        max-width: 900px;
         margin: 0 auto;
       }
-      body[data-route='today'] #app {
-        min-height: calc(100vh - 132px);
+      body[data-route='now'] #app {
+        min-height: calc(100vh - 120px);
         justify-content: center;
       }
-      .plate {
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 18px;
+      .clock-wrap {
+        position: relative;
+        line-height: 0;
       }
-      .plate canvas {
+      .clock-wrap canvas {
         display: block;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+      .clock-wrap canvas + canvas {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
       }
       .caption {
         font-size: 13px;
         letter-spacing: 0.06em;
-        color: var(--muted);
-      }
-      .caption .seed {
-        color: var(--accent);
-        font-weight: 500;
-      }
-      .countdown {
-        font-size: 12px;
-        color: var(--accent);
-        margin: 4px 0 0;
+        opacity: 0.75;
+        margin: 10px 0 0;
         font-variant-numeric: tabular-nums;
       }
-      /* 아카이브 */
-      .archive-title {
-        font-family: 'Fraunces', serif;
-        font-style: italic;
-        font-weight: 400;
-        font-size: 17px;
-        align-self: flex-start;
-        margin: 0 0 6px;
-        color: var(--muted);
-      }
-      .archive-grid {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
-        gap: 10px;
-      }
-      .archive-day {
-        grid-column: 1 / -1;
-        font-size: 11px;
-        letter-spacing: 0.1em;
-        color: var(--muted);
-        border-bottom: 1px solid #eee;
-        padding: 14px 0 4px;
-      }
-      .archive-tile {
+      .link-row {
         display: flex;
-        flex-direction: column;
-        gap: 3px;
+        gap: 16px;
+        align-items: center;
+        font-size: 12px;
+        margin: 0;
+      }
+      .link-row a {
+        color: inherit;
         text-decoration: none;
+        border-bottom: 1px solid currentColor;
+        padding-bottom: 1px;
       }
-      .archive-tile canvas {
-        width: 100%;
-        aspect-ratio: 1;
-        background: #f4f4f4;
-        display: block;
+      .low-power {
+        font-family: inherit;
+        font-size: 11px;
+        background: none;
+        color: inherit;
+        border: 1px solid currentColor;
+        opacity: 0.6;
+        padding: 3px 10px;
+        cursor: pointer;
+        border-radius: 999px;
       }
-      .archive-tile:hover canvas {
-        outline: 2px solid var(--accent);
+      .low-power:hover {
+        opacity: 1;
       }
-      .archive-time {
-        font-size: 10px;
-        color: var(--muted);
-      }
-      .archive-sentinel {
-        height: 1px;
-        width: 100%;
-      }
-      /* 판 상세 */
       .export-row {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-top: 18px;
+        margin-top: 14px;
       }
       .export-label {
         font-size: 11px;
         letter-spacing: 0.1em;
-        color: var(--muted);
+        opacity: 0.6;
+        margin-left: 12px;
       }
       .export-btn {
         font-family: inherit;
         font-size: 12px;
         padding: 5px 12px;
-        background: #fff;
-        color: var(--ink);
-        border: 1px solid #ddd;
+        background: none;
+        color: inherit;
+        border: 1px solid currentColor;
         cursor: pointer;
       }
       .export-btn:hover:not(:disabled) {
-        border-color: var(--accent);
-        color: var(--accent);
+        font-weight: 500;
       }
       .export-btn:disabled {
-        opacity: 0.4;
+        opacity: 0.35;
         cursor: default;
       }
       .export-progress {
         font-size: 12px;
-        color: var(--accent);
-        min-width: 3.5em;
+        opacity: 0.7;
+        min-width: 4em;
         font-variant-numeric: tabular-nums;
       }
       .plate-json {
         font-size: 11px;
         line-height: 1.7;
-        color: var(--muted);
-        background: #fafafa;
-        border: 1px solid #eee;
+        opacity: 0.75;
+        border: 1px solid currentColor;
         padding: 16px 20px;
         max-width: min(90vw, 720px);
         overflow-x: auto;
-        margin-top: 24px;
+        margin-top: 20px;
       }
       .plate-error {
-        color: var(--muted);
+        opacity: 0.7;
       }
     </style>
   </head>
   <body>
     <header>
-      <h1 class="brand"><a href="#/" style="color: inherit; text-decoration: none">daymark</a></h1>
-      <nav><a href="#/archive">archive</a></nav>
+      <h1 class="brand"><a href="#/">daymark.</a></h1>
     </header>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>

@@ -1,59 +1,44 @@
-// SPEC §5 — 시드 / 파라미터 / 렌더 3단 분리의 가운데 층.
-// 렌더는 rng를 직접 뒤지지 않고 이 명시적 파라미터 객체를 받는다.
+// SPEC §5 — 시드 / 파라미터 / 필드 / 이펙트 4단 분리의 파라미터 층.
 
-import type { Palette } from '../core/palette';
+import type { Tone } from '../core/tone';
 
-export const SYSTEM_IDS = [
-  'flowfield',
-  'packing',
-  'truchet',
-  'subdivision',
-  'interference',
-] as const;
+export const FIELD_IDS = ['noise', 'radial', 'interference', 'subdivision', 'flow'] as const;
+export type FieldId = (typeof FIELD_IDS)[number];
 
-export type SystemId = (typeof SYSTEM_IDS)[number];
+// v1은 E1~E4 네 종만. edge/displace/automata/ascii는 v1.1 (SPEC §7)
+export const EFFECT_IDS = ['dots', 'dither', 'stipple', 'steps'] as const;
+export type EffectId = (typeof EFFECT_IDS)[number];
 
-// --- 시스템별 config (SPEC §6) ---
+// --- 필드 config (SPEC §6) ---
 
-export type FlowfieldConfig = {
-  kind: 'flowfield';
-  noiseScale: number;
-  particles: number;
-  steps: number;
-  stepLen: number;
-  alpha: number;
-  taper: number;
-  turns: number;
+export type NoiseConfig = {
+  kind: 'noise';
+  scale: number;
+  octaves: number;
+  warp: number;
+  ridged: boolean;
 };
 
-export type PackingStyle = 'solid' | 'ring' | 'nested' | 'mixed';
-export type PackingMask = 'none' | 'dateGlyph';
-
-export type PackingConfig = {
-  kind: 'packing';
-  attempts: number;
-  minR: number;
-  maxR: number;
-  padding: number;
-  style: PackingStyle;
-  mask: PackingMask;
+export type RadialConfig = {
+  kind: 'radial';
+  rings: number;
+  spokes: number;
+  twist: number;
+  falloff: number;
+  handInfluence: number;
 };
 
-export type TruchetVariant = 'arc' | 'diagonal' | 'maze' | 'arcThick';
-
-export type TruchetConfig = {
-  kind: 'truchet';
-  grid: number;
-  variant: TruchetVariant;
-  subdivide: number;
-  weight: number;
+export type InterferenceLayer = {
+  angle: number;
+  freq: number;
+  amp: number;
+  phaseOffset: number;
+  speed: number; // phase 배속 0.5~1.5 (§6 F3)
 };
 
-export type LeafMix = {
-  solid: number;
-  hatch: number;
-  empty: number;
-  concentric: number;
+export type InterferenceConfig = {
+  kind: 'interference';
+  layers: InterferenceLayer[];
 };
 
 export type SubdivisionConfig = {
@@ -61,35 +46,69 @@ export type SubdivisionConfig = {
   maxDepth: number;
   splitBias: number;
   minSize: number;
-  leafMix: LeafMix;
   gutter: number;
 };
 
-export type InterferenceLayer = {
-  angle: number;
-  freq: number;
-  amp: number;
-  phase: number;
-  weight: number;
+export type FlowConfig = {
+  kind: 'flow';
+  noiseScale: number;
+  particles: number;
+  steps: number;
+  stepLen: number;
+  decay: number;
 };
 
-export type InterferenceConfig = {
-  kind: 'interference';
-  layers: InterferenceLayer[];
-  blend: 'source-over' | 'multiply';
-};
-
-export type SystemConfig =
-  | FlowfieldConfig
-  | PackingConfig
-  | TruchetConfig
+export type FieldConfig =
+  | NoiseConfig
+  | RadialConfig
+  | InterferenceConfig
   | SubdivisionConfig
-  | InterferenceConfig;
+  | FlowConfig;
+
+// --- 이펙트 config (SPEC §7) ---
+
+export type DotsConfig = {
+  kind: 'dots';
+  grid: number;
+  angle: number;
+  gridType: 'regular' | 'benday';
+  minR: number;
+  maxR: number;
+  cornerRadius: number; // 1 = 원, 0 = 사각
+};
+
+export type DitherConfig = {
+  kind: 'dither';
+  pattern: 'bayer2' | 'bayer4' | 'bayer8' | 'fs';
+  pixelSize: number; // 출력 픽셀 기준 (1024 기준값, §9 예외)
+  threshold: number;
+};
+
+export type StippleConfig = {
+  kind: 'stipple';
+  xSquares: number;
+  ySquares: number;
+  angle: number;
+  minW: number;
+  maxW: number;
+};
+
+export type StepsConfig = {
+  kind: 'steps';
+  stepSize: number; // 셀 한 변 (유닛)
+  shape: 'rect' | 'ellipse';
+  levels: number;
+};
+
+export type EffectConfig = DotsConfig | DitherConfig | StippleConfig | StepsConfig;
 
 export type Params = {
-  dateKey: string;
-  system: SystemId;
-  palette: Palette;
-  seedHex: string; // 화면에 표시할 시드 지문
-  config: SystemConfig;
+  ts: string;
+  field: FieldId;
+  effect: EffectId;
+  tone: Tone;
+  seedHex: string; // 화면에 표시할 지문 (분 키 기준 — 초마다 바뀌면 노이즈다)
+  fieldConfig: FieldConfig;
+  effectConfig: EffectConfig;
+  phase: number; // [0,1) 초 위상
 };

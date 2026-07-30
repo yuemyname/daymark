@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`L2 — 트레이스 스냅샷 (필드 5 × 이펙트 4) > 20조합의 트레이스 해시가 기록과 일치한다 1`] = `
+{
+  "flow/dither": "75e5301e37cd32c6267cbfb708d10abf",
+  "flow/dots": "4815530cf0a6431e703f979315fd0dbf",
+  "flow/steps": "be709f9de880a96061f2659317f807be",
+  "flow/stipple": "90a1ecd5e235180ab9ddc1d7a9c8c062",
+  "interference/dither": "9aea71c19395539c064c3fb4ef0e472a",
+  "interference/dots": "4262e1082f140eaf6845901c767cba43",
+  "interference/steps": "2306b3c6aa6295db597bfcf19f043e0c",
+  "interference/stipple": "2519c4c20afec1b007b02b5bc58d994e",
+  "noise/dither": "4ea438758f4ead52a84fe87751e13a7a",
+  "noise/dots": "16b75265fa221373e19d954db6287b50",
+  "noise/steps": "686c2a6837244b87160d26782cdf4a71",
+  "noise/stipple": "4982ddb7f3ae74fa1c9d31f6d645a029",
+  "radial/dither": "043413cf7a2f63328c56cf1ad59e7183",
+  "radial/dots": "6602b9c9db77df091bcd2e67226acc0b",
+  "radial/steps": "5c05b2ca96c8df6495a3f73069830e75",
+  "radial/stipple": "7bb19c0b07bf5f1fc0d1b06b516b4d21",
+  "subdivision/dither": "e6652a689612d58fa4ccb7b1c5f228bc",
+  "subdivision/dots": "8b034fbfabf1bf185891457ae5cb83d3",
+  "subdivision/steps": "8e527dc21749fd4ffaf5592a8a216bd0",
+  "subdivision/stipple": "1d566c51ceb14dec6c000b501e52a542",
+}
+`;

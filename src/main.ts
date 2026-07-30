@@ -1,7 +1,6 @@
 import { parseRoute } from './router';
-import { mountArchive } from './views/archive';
+import { mountNow } from './views/now';
 import { mountPlate } from './views/plate';
-import { mountToday } from './views/today';
 
 const found = document.getElementById('app');
 if (!found) throw new Error('#app not found');
@@ -15,12 +14,7 @@ function render(): void {
   window.scrollTo(0, 0);
   const route = parseRoute();
   document.body.setAttribute('data-route', route.name);
-  cleanup =
-    route.name === 'archive'
-      ? mountArchive(app)
-      : route.name === 'plate'
-        ? mountPlate(app, route.key)
-        : mountToday(app);
+  cleanup = route.name === 'plate' ? mountPlate(app, route.ts) : mountNow(app);
 }
 
 window.addEventListener('hashchange', render);
