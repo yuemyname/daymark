@@ -64,10 +64,10 @@ export function enforceDeltaL(inkL: number, bgL: number): number {
 }
 
 export function paletteFor(rng: () => number): Palette {
-  // 1. mode 추첨 — paper 40% / light 40% / dark 20%
+  // 1. mode 추첨 — paper 45% / light 45% / dark 10%
   // (원안은 dark 40%였지만 밝은 화면 취향에 맞춰 조정. SPEC §7도 갱신함)
   const r = rng();
-  const mode: PaletteMode = r < 0.2 ? 'dark' : r < 0.6 ? 'paper' : 'light';
+  const mode: PaletteMode = r < 0.1 ? 'dark' : r < 0.55 ? 'paper' : 'light';
 
   // 2. 기저 색조 — 전체 색상환
   const h0 = rng() * 360;
@@ -92,8 +92,9 @@ export function paletteFor(rng: () => number): Palette {
   for (let i = 0; i < inkCount; i++) {
     const h = norm360(pick(rng, hues) + range(rng, -6, 6));
     // 파스텔/차분 — 채도를 낮게 유지한다
-    const c = range(rng, 0.04, 0.1);
-    const rawL = mode === 'dark' ? range(rng, 0.6, 0.88) : range(rng, 0.22, 0.55);
+    const c = range(rng, 0.03, 0.07);
+    // 밝은 취향 — 잉크 명도를 위로 올린다 (ΔL 가드가 하한을 지켜준다)
+    const rawL = mode === 'dark' ? range(rng, 0.68, 0.9) : range(rng, 0.32, 0.6);
     inks.push({ l: enforceDeltaL(rawL, bgL), c, h });
   }
 
