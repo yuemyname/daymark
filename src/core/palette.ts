@@ -33,15 +33,17 @@ function range(rng: () => number, min: number, max: number): number {
   return min + rng() * (max - min);
 }
 
-// 차분한 톤 유지를 위해 보색 계열(split-complementary, triad)은 뺐다.
-// 색조가 h0 주변에만 머물러야 블루·그린 계열이 유지된다.
-const SCHEMES = ['analogous', 'mono'] as const;
+const SCHEMES = ['analogous', 'split-complementary', 'triad', 'mono'] as const;
 type Scheme = (typeof SCHEMES)[number];
 
 function schemeHues(scheme: Scheme, h0: number): number[] {
   switch (scheme) {
     case 'analogous':
       return [h0 - 30, h0, h0 + 30];
+    case 'split-complementary':
+      return [h0, h0 + 150, h0 - 150];
+    case 'triad':
+      return [h0, h0 + 120, h0 - 120];
     case 'mono':
       return [h0 - 8, h0, h0 + 8];
   }
@@ -67,8 +69,8 @@ export function paletteFor(rng: () => number): Palette {
   const r = rng();
   const mode: PaletteMode = r < 0.2 ? 'dark' : r < 0.6 ? 'paper' : 'light';
 
-  // 2. 기저 색조 — 블루·그린 계열 [140°, 270°) (초록 → 청록 → 파랑)
-  const h0 = 140 + rng() * 130;
+  // 2. 기저 색조 — 전체 색상환
+  const h0 = rng() * 360;
 
   // 3. 배색 방식
   const scheme = pick(rng, SCHEMES);
