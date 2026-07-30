@@ -1,5 +1,5 @@
 // SPEC §9.2 — `/` 지금 화면.
-// 정사각 캔버스 + 판 캡션 + 다음 분까지 카운트다운 (1분 주기로 변경).
+// 정사각 캔버스 + 판 캡션 + 다음 분까지 카운트다운 (1분 주기).
 // 그림은 완성본을 툭 띄우지 않고 rAF로 그려지는 과정을 보여준다 (W2.4).
 
 import { setupSquareCanvas } from '../core/canvas';
@@ -7,13 +7,9 @@ import { msUntilNextMinute, plateKey } from '../core/date';
 import { rngFor } from '../core/rng';
 import { configFor, paramsFor } from '../params';
 import { resolveRender } from '../systems';
+import { startProgressiveRender } from './progressive';
 
-// 프레임당 렌더 예산 — 스텝 수와 시간(ms) 둘 다로 제한한다.
-// 스텝 제한이 없으면 빠른 시스템은 두 프레임 만에 끝나서 과정이 안 보인다.
-const STEPS_PER_FRAME = 4;
-const FRAME_BUDGET_MS = 8;
-
-export function mountToday(root: HTMLElement): void {
+export function mountToday(root: HTMLElement): () => void {
   let currentKey = '';
   let cancelRender: (() => void) | null = null;
   let countdownTimer: number | undefined;
@@ -24,8 +20,7 @@ export function mountToday(root: HTMLElement): void {
     currentKey = key;
 
     const params = paramsFor(key);
-    // 미구현 시스템이면 subdivision 폴백 (W3까지의 임시 동작).
-    // config도 폴백 시스템에 맞게 별도 스트림에서 결정적으로 재생성한다.
+    // 미구현 시스템이면 subdivision 폴백 (전 시스템 구현 후엔 항상 본인)
     const { id: usedSystem, fn: render } = resolveRender(params.system);
     const renderParams =
       usedSystem === params.system
@@ -84,22 +79,11 @@ export function mountToday(root: HTMLElement): void {
   }
 
   show();
-}
 
-/** rAF 청크 렌더. 반환된 함수로 취소한다. */
-function startProgressiveRender(makeGen: () => Generator<void, void, void>): () => void {
-  const gen = makeGen();
-  let raf = 0;
-  const tick = (): void => {
-    const start = performance.now();
-    for (let i = 0; i < STEPS_PER_FRAME; i++) {
-      if (gen.next().done) return;
-      if (performance.now() - start > FRAME_BUDGET_MS) break;
-    }
-    raf = requestAnimationFrame(tick);
+  return () => {
+    cancelRender?.();
+    if (countdownTimer !== undefined) window.clearInterval(countdownTimer);
   };
-  raf = requestAnimationFrame(tick);
-  return () => cancelAnimationFrame(raf);
 }
 
 function formatMs(ms: number): string {

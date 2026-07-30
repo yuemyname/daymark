@@ -31,5 +31,5 @@ dev 서버 전용 페이지 (프로덕션 빌드 제외):
 - [x] W3 시스템 4종 (truchet / flowfield / interference / packing + dateGlyph)
   - 아카이브(W5)는 하루 1,440장 체제에 맞는 재설계 필요
 - [x] W4 다듬기 — L2 트레이스 스냅샷(5종), 90장 미리보기(`/plates.html?n=90`), 파라미터 튜닝(빈 subdivision·회색 죽 interference·격자 maze 해소), Fraunces + IBM Plex Mono + accent 크롬
-- [ ] W5 아카이브
-- [ ] W6 상세 + PNG 내보내기
+- [x] W5 아카이브 — 최근 판 그리드(무한 스크롤 + 날짜 구분선), 해시 라우팅(`#/archive`, `#/d/…`), IntersectionObserver 지연 렌더 + 프레임당 1칸 렌더 큐, ImageBitmap 캐시, 판 상세(큰 그림 + params JSON)
+- [ ] W6 PNG 내보내기 + 진행 표시
