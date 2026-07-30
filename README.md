@@ -30,6 +30,6 @@ dev 서버 전용 페이지 (프로덕션 빌드 제외):
 - [x] 주기 변경 — 하루 → 1분 (판 키 `YYYY-MM-DD HH:mm`, KST). 시스템 선택은 직전 2분 회피(O(1) 원추첨 방식)
 - [x] W3 시스템 4종 (truchet / flowfield / interference / packing + dateGlyph)
   - 아카이브(W5)는 하루 1,440장 체제에 맞는 재설계 필요
-- [ ] W4 다듬기 — L2 트레이스 테스트, 90일 미리보기, 튜닝, 타이포
+- [x] W4 다듬기 — L2 트레이스 스냅샷(5종), 90장 미리보기(`/plates.html?n=90`), 파라미터 튜닝(빈 subdivision·회색 죽 interference·격자 maze 해소), Fraunces + IBM Plex Mono + accent 크롬
 - [ ] W5 아카이브
 - [ ] W6 상세 + PNG 내보내기

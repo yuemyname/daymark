@@ -108,16 +108,18 @@ export function configFor(system: SystemId, rng: () => number): SystemConfig {
         mask: rng() < 0.3 ? 'dateGlyph' : 'none',
       };
     case 'truchet':
+      // W4.3 튜닝: 격자를 줄이고 선을 키워 무늬가 또렷하게
       return {
         kind: 'truchet',
-        grid: int(rng, 6, 14),
+        grid: int(rng, 5, 10),
         variant: pick(rng, ['arc', 'diagonal', 'maze', 'arcThick'] as const),
         subdivide: r4(range(rng, 0.15, 0.5)),
-        weight: r4(range(rng, 0.04, 0.14)),
+        weight: r4(range(rng, 0.06, 0.16)),
       };
     case 'subdivision': {
-      // leafMix — 4개 가중치를 뽑아 확률 분포로 정규화
-      const w = [rng(), rng(), rng(), rng()] as const;
+      // leafMix — 4개 가중치를 뽑아 확률 분포로 정규화.
+      // W4.3 튜닝: empty가 판을 통째로 비워버리는 날이 잦아서 반으로 감쇠
+      const w = [rng(), rng(), rng() * 0.5, rng()] as const;
       const sum = w[0] + w[1] + w[2] + w[3];
       return {
         kind: 'subdivision',
@@ -134,15 +136,16 @@ export function configFor(system: SystemId, rng: () => number): SystemConfig {
       };
     }
     case 'interference': {
+      // W4.3 튜닝: freq 상한을 내리고 선을 살짝 키움 — 140까지 가면 회색 죽이 된다
       const layerCount = int(rng, 2, 3);
       const layers: InterferenceLayer[] = [];
       for (let i = 0; i < layerCount; i++) {
         layers.push({
           angle: r4(range(rng, 0, Math.PI)),
-          freq: r4(range(rng, 40, 140)),
-          amp: r4(range(rng, 0.002, 0.02)),
+          freq: r4(range(rng, 30, 90)),
+          amp: r4(range(rng, 0.004, 0.02)),
           phase: r4(range(rng, 0, Math.PI * 2)),
-          weight: r4(range(rng, 0.001, 0.004)),
+          weight: r4(range(rng, 0.0015, 0.0045)),
         });
       }
       return {

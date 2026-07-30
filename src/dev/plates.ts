@@ -8,11 +8,17 @@ import { rngFor } from '../core/rng';
 import { paramsFor } from '../params';
 import { resolveRender } from '../systems';
 
-const COUNT = 24;
-const TILE_CSS = 240;
+const search = new URLSearchParams(location.search);
+const qn = Number(search.get('n') ?? '24');
+const COUNT = Number.isFinite(qn) ? Math.min(240, Math.max(1, Math.floor(qn))) : 24;
+// 90장 튜닝 모드(W4.2)에선 타일을 줄여 한눈에 들어오게
+const TILE_CSS = COUNT > 40 ? 128 : 240;
 
 const grid = document.getElementById('grid');
-const queryStart = new URLSearchParams(location.search).get('start')?.replace('T', ' ');
+if (grid instanceof HTMLElement) {
+  grid.style.gridTemplateColumns = `repeat(auto-fill, minmax(${TILE_CSS}px, 1fr))`;
+}
+const queryStart = search.get('start')?.replace('T', ' ');
 const start = queryStart && isValidPlateKey(queryStart) ? queryStart : plateKey();
 
 const queue: (() => void)[] = [];

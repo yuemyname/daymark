@@ -7,26 +7,7 @@ import { rngFor } from '../src/core/rng';
 import { paramsFor } from '../src/params';
 import { SYSTEM_IDS, type SystemId } from '../src/params/types';
 import { systems } from '../src/systems';
-
-function makeTraceCtx(): { ctx: CanvasRenderingContext2D; trace: string[] } {
-  const trace: string[] = [];
-  const fmt = (v: unknown): string => (typeof v === 'number' ? v.toFixed(4) : String(v));
-  const ctx = new Proxy(
-    {},
-    {
-      get(_t, k) {
-        return (...args: unknown[]) => {
-          trace.push(`${String(k)}(${args.map(fmt).join(',')})`);
-        };
-      },
-      set(_t, k, v) {
-        trace.push(`set ${String(k)}=${fmt(v)}`);
-        return true;
-      },
-    },
-  ) as unknown as CanvasRenderingContext2D;
-  return { ctx, trace };
-}
+import { makeTraceCtx } from './helpers/traceCtx';
 
 /** 각 시스템이 걸리는 판 키를 하나씩 찾는다. */
 function keyFor(system: SystemId): string {

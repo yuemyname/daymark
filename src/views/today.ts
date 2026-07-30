@@ -46,7 +46,11 @@ export function mountToday(root: HTMLElement): void {
 
     const caption = document.createElement('figcaption');
     caption.className = 'caption';
-    caption.textContent = `${key} · ${usedSystem.toUpperCase()} · ${params.seedHex}`;
+    caption.append(`${key} · ${usedSystem.toUpperCase()} · `);
+    const seed = document.createElement('span');
+    seed.className = 'seed';
+    seed.textContent = params.seedHex;
+    caption.appendChild(seed);
     figure.appendChild(caption);
 
     const countdown = document.createElement('p');

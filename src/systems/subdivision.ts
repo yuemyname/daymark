@@ -94,8 +94,11 @@ function drawLeaf(
   const h = leaf.h - cfg.gutter;
   if (w <= 0 || h <= 0) return;
 
-  const kind = pickLeafKind(cfg.leafMix, rng);
+  let kind = pickLeafKind(cfg.leafMix, rng);
   const ink = pickInk(inks, rng);
+
+  // W4.3: 큰 칸이 empty로 뽑히면 판이 통째로 비어 보인다 — 해칭으로 대체
+  if (kind === 'empty' && w * h > 0.12) kind = 'hatch';
 
   switch (kind) {
     case 'empty':

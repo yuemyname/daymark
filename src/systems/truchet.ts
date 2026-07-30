@@ -99,21 +99,18 @@ function drawTile(
       }
       break;
     case 'maze':
-      // 변 중점을 직각으로 잇는 파이프 엘보 두 개 (중심에서 만난다)
+      // 변 중점을 직선 현(chord)으로 잇는다 — 호(arc)의 각진 버전.
+      // (중심에서 만나는 엘보로 그리면 십자 격자처럼 보여서 W4.3에서 교체)
       if (flip) {
-        ctx.moveTo(x + h, y); // 상 → 중 → 우
-        ctx.lineTo(x + h, y + h);
+        ctx.moveTo(x + h, y); // 상 ↔ 우
         ctx.lineTo(x + s, y + h);
-        ctx.moveTo(x + h, y + s); // 하 → 중 → 좌
-        ctx.lineTo(x + h, y + h);
-        ctx.lineTo(x, y + h);
+        ctx.moveTo(x, y + h); // 좌 ↔ 하
+        ctx.lineTo(x + h, y + s);
       } else {
-        ctx.moveTo(x + h, y); // 상 → 중 → 좌
-        ctx.lineTo(x + h, y + h);
+        ctx.moveTo(x + h, y); // 상 ↔ 좌
         ctx.lineTo(x, y + h);
-        ctx.moveTo(x + h, y + s); // 하 → 중 → 우
-        ctx.lineTo(x + h, y + h);
-        ctx.lineTo(x + s, y + h);
+        ctx.moveTo(x + s, y + h); // 우 ↔ 하
+        ctx.lineTo(x + h, y + s);
       }
       break;
   }
