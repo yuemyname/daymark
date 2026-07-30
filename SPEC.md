@@ -244,7 +244,7 @@ type Palette = {
 
 **생성 규칙**
 
-1. `mode` 추첨 — dark 40% / paper 40% / light 20%
+1. `mode` 추첨 — paper 40% / light 40% / dark 20%
 2. 기저 색조 `h₀` 를 [0,360)에서 추첨
 3. 배색 방식 추첨 — analogous(±30°) / split-complementary(±150°) / triad(±120°) / mono(±8°)
 4. 각 잉크: 방식이 정한 h, C는 0.08~0.20, L은 mode에 따라 배경과 최소 0.35 이상 벌린다

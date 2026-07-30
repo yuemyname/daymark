@@ -10,5 +10,14 @@ const params = paramsFor(key);
 const el = document.getElementById('params');
 if (el) el.textContent = JSON.stringify(params, null, 2);
 
-document.body.style.background = params.palette.bg;
-document.body.style.color = params.palette.inks[0] ?? '#888';
+// 크롬은 흰 배경 그대로 두고 (SPEC §9.1 — UI는 무채색),
+// 오늘의 팔레트는 칩으로만 보여준다.
+const chips = document.getElementById('chips');
+if (chips) {
+  for (const color of [params.palette.bg, ...params.palette.inks]) {
+    const d = document.createElement('div');
+    d.style.background = color;
+    d.title = color;
+    chips.appendChild(d);
+  }
+}

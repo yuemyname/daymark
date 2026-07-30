@@ -64,9 +64,10 @@ export function enforceDeltaL(inkL: number, bgL: number): number {
 }
 
 export function paletteFor(rng: () => number): Palette {
-  // 1. mode 추첨 — dark 40% / paper 40% / light 20%
+  // 1. mode 추첨 — paper 40% / light 40% / dark 20%
+  // (원안은 dark 40%였지만 밝은 화면 취향에 맞춰 조정. SPEC §7도 갱신함)
   const r = rng();
-  const mode: PaletteMode = r < 0.4 ? 'dark' : r < 0.8 ? 'paper' : 'light';
+  const mode: PaletteMode = r < 0.2 ? 'dark' : r < 0.6 ? 'paper' : 'light';
 
   // 2. 기저 색조
   const h0 = rng() * 360;

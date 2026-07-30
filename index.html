@@ -8,8 +8,8 @@
       body {
         margin: 0;
         font-family: 'IBM Plex Mono', ui-monospace, monospace;
-        background: #111;
-        color: #ddd;
+        background: #ffffff;
+        color: #222;
         display: grid;
         place-items: center;
         min-height: 100vh;
@@ -20,12 +20,24 @@
         max-width: 90vw;
         overflow-x: auto;
       }
+      .chips {
+        display: flex;
+        gap: 6px;
+        margin: 12px 0;
+      }
+      .chips div {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        border: 1px solid #eee;
+      }
     </style>
   </head>
   <body>
     <main>
       <h1>daymark</h1>
       <p>W1 — 결정성 코어. 화면(W2)은 아직이다. 아래는 오늘의 파라미터.</p>
+      <div class="chips" id="chips"></div>
       <pre id="params"></pre>
     </main>
     <script type="module" src="/src/main.ts"></script>
