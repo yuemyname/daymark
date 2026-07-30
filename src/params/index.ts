@@ -193,8 +193,12 @@ export function effectConfigFor(effect: EffectId, rng: () => number): EffectConf
   }
 }
 
-/** 타임스탬프 하나로부터 그 순간의 모든 것이 결정된다. */
-export function paramsFor(ts: string): Params {
+/**
+ * 타임스탬프 하나로부터 그 순간의 모든 것이 결정된다.
+ * fracSecond(0~1)를 주면 phase가 초 사이를 연속으로 채운다 —
+ * 화면이 1Hz로 뚝뚝 끊기지 않게 하는 장치. rng에는 절대 들어가지 않는다.
+ */
+export function paramsFor(ts: string, fracSecond = 0): Params {
   if (!isValidTsKey(ts)) throw new Error(`invalid ts: ${ts}`);
   const hk = hourKey(ts);
   const mk = minuteKey(ts);
@@ -214,6 +218,6 @@ export function paramsFor(ts: string): Params {
     seedHex: seedHexFor(mk),
     fieldConfig,
     effectConfig,
-    phase: secondOf(ts) / 60,
+    phase: Math.min(59.999, secondOf(ts) + Math.min(0.999, Math.max(0, fracSecond))) / 60,
   };
 }

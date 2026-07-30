@@ -13,13 +13,13 @@ export function radial(a: FieldArgs): void {
   const cfg = params.fieldConfig;
   if (cfg.kind !== 'radial') throw new Error(`wrong config: ${cfg.kind}`);
 
-  const { h, m, s } = hmsOf(params.ts);
-  // 12시 방향 = -π/2. 시계 좌표계와 맞춘다
-  const secA = (s / 60) * TAU - Math.PI / 2;
-  const minA = ((m + s / 60) / 60) * TAU - Math.PI / 2;
-  const hourA = (((h % 12) + m / 60) / 12) * TAU - Math.PI / 2;
+  const { h, m } = hmsOf(params.ts);
+  // 12시 방향 = -π/2. 시계 좌표계와 맞춘다.
+  // 초침 로브는 없다 (v1.2에서 초침 제거) — phase(초의 연속 위상)가
+  // 분침 로브를 매끄럽게 밀고 간다. 뚝뚝 끊기는 값이 없다.
+  const minA = ((m + params.phase) / 60) * TAU - Math.PI / 2;
+  const hourA = (((h % 12) + (m + params.phase) / 60) / 12) * TAU - Math.PI / 2;
   const lobes: { angle: number; w: number; sharp: number }[] = [
-    { angle: secA, w: 0.5, sharp: 40 },
     { angle: minA, w: 0.8, sharp: 18 },
     { angle: hourA, w: 1.0, sharp: 9 },
   ];

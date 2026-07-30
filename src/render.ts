@@ -27,14 +27,15 @@ export type RenderResult = { params: Params; bg: string; fg: string };
 /**
  * ts의 배경을 ctx(size×size)에 그린다.
  * circleClip이면 원형 클립 안에만 — 원 밖은 bg로 남는다.
+ * frac(0~1)은 초 사이의 연속 위상 — 화면용. 퍼머링크·내보내기는 0.
  */
 export function renderBackground(
   ctx: CanvasRenderingContext2D,
   size: number,
   ts: string,
-  opts: { circleClip?: boolean } = {},
+  opts: { circleClip?: boolean; frac?: number } = {},
 ): RenderResult {
-  const params = paramsFor(ts);
+  const params = paramsFor(ts, opts.frac ?? 0);
   const mk = minuteKey(ts);
   const { bg, fg } = colorsFor(ts);
 
