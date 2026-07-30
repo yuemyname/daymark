@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>daymark</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        background: #111;
+        color: #ddd;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+      }
+      pre {
+        font-size: 12px;
+        line-height: 1.6;
+        max-width: 90vw;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>daymark</h1>
+      <p>W1 — 결정성 코어. 화면(W2)은 아직이다. 아래는 오늘의 파라미터.</p>
+      <pre id="params"></pre>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

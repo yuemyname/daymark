@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`L1 — 파라미터 스냅샷 > 고정 날짜 12개의 params 해시가 기록과 일치한다 1`] = `
+{
+  "2026-01-01": "96e1b7bdb7866c430b8bbe948de9a004",
+  "2026-01-31": "fa7526f5a2bac848d3674d36836be577",
+  "2026-02-01": "55ecc7b9416b88dcc57ee2ccd86e651b",
+  "2026-02-28": "531c035c19c8823aca57deb96e192bdc",
+  "2026-06-15": "bdb3849a0f218a261e6bb05eee71bff5",
+  "2026-07-30": "648ded164779e7dd9ecc0126b8479647",
+  "2026-08-31": "af825d80c122e251ec762091f864f23c",
+  "2026-10-05": "605f0c12fbe2e5428fddd1ff340b6245",
+  "2026-11-30": "72de59b03f56b2cb7bb37d9f8709af6f",
+  "2026-12-31": "60cfd0f7b9d37bf7574debeeab76d1d1",
+  "2027-01-01": "c1373a6b4f038d83a1c00d1774f860b2",
+  "2028-02-29": "857b7a505adda16db3988bf8930c3dca",
+}
+`;
+
+exports[`L1 — 파라미터 스냅샷 > 전체 params JSON도 한 날짜는 원문으로 기록한다 (디버깅용 기준선) 1`] = `
+{
+  "config": {
+    "alpha": 0.0598,
+    "kind": "flowfield",
+    "noiseScale": 2.4365,
+    "particles": 617,
+    "stepLen": 0.0044,
+    "steps": 161,
+    "taper": 0.3816,
+    "turns": 0.8346,
+  },
+  "dateKey": "2026-07-30",
+  "palette": {
+    "accent": "#3e1200",
+    "bg": "#f1faf8",
+    "inks": [
+      "#af3e79",
+      "#003937",
+      "#814124",
+      "#3e1200",
+      "#004a4a",
+    ],
+    "mode": "light",
+  },
+  "seedHex": "d1c9d3",
+  "system": "flowfield",
+}
+`;
