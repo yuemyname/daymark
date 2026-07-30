@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   addDays,
+  addMinutes,
+  dayOf,
   diffDays,
   isValidDateKey,
+  isValidPlateKey,
   msUntilNextMidnightKST,
+  msUntilNextMinute,
+  plateKey,
   todayKey,
 } from '../src/core/date';
 
@@ -50,6 +55,51 @@ describe('addDays / diffDays', () => {
     expect(diffDays('2026-01-01', '2026-12-31')).toBe(364);
     expect(diffDays('2026-07-30', addDays('2026-07-30', 90))).toBe(90);
     expect(diffDays('2026-07-30', '2026-07-29')).toBe(-1);
+  });
+});
+
+describe('plateKey', () => {
+  it('KST 기준 분 단위 키', () => {
+    // 2026-07-30T21:37 KST = 2026-07-30T12:37 UTC
+    expect(plateKey(new Date('2026-07-30T12:37:59Z'))).toBe('2026-07-30 21:37');
+    // KST 자정 직전/직후
+    expect(plateKey(new Date('2026-07-29T14:59:00Z'))).toBe('2026-07-29 23:59');
+    expect(plateKey(new Date('2026-07-29T15:00:00Z'))).toBe('2026-07-30 00:00');
+  });
+});
+
+describe('isValidPlateKey', () => {
+  it('형식·범위·실존 여부', () => {
+    expect(isValidPlateKey('2026-07-30 21:37')).toBe(true);
+    expect(isValidPlateKey('2026-07-30 00:00')).toBe(true);
+    expect(isValidPlateKey('2026-07-30 23:59')).toBe(true);
+    expect(isValidPlateKey('2026-07-30 24:00')).toBe(false);
+    expect(isValidPlateKey('2026-07-30 12:60')).toBe(false);
+    expect(isValidPlateKey('2026-02-29 12:00')).toBe(false); // 평년
+    expect(isValidPlateKey('2026-07-30')).toBe(false);
+    expect(isValidPlateKey('2026-07-30T21:37')).toBe(false);
+  });
+});
+
+describe('addMinutes / dayOf', () => {
+  it('시·일·월·연 경계를 넘는다', () => {
+    expect(addMinutes('2026-07-30 21:37', 1)).toBe('2026-07-30 21:38');
+    expect(addMinutes('2026-07-30 23:59', 1)).toBe('2026-07-31 00:00');
+    expect(addMinutes('2026-12-31 23:59', 1)).toBe('2027-01-01 00:00');
+    expect(addMinutes('2028-02-28 23:59', 1)).toBe('2028-02-29 00:00');
+    expect(addMinutes('2026-07-30 00:00', -1)).toBe('2026-07-29 23:59');
+  });
+
+  it('dayOf는 날짜 부분만', () => {
+    expect(dayOf('2026-07-30 21:37')).toBe('2026-07-30');
+  });
+});
+
+describe('msUntilNextMinute', () => {
+  it('경계 직전엔 거의 0, 직후엔 거의 60초', () => {
+    expect(msUntilNextMinute(new Date('2026-07-30T12:37:59.000Z'))).toBe(1000);
+    expect(msUntilNextMinute(new Date('2026-07-30T12:37:00.001Z'))).toBe(59999);
+    expect(msUntilNextMinute(new Date('2026-07-30T12:37:00.000Z'))).toBe(60000);
   });
 });
 

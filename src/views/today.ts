@@ -1,9 +1,9 @@
-// SPEC §9.2 — `/` 오늘 화면.
-// 정사각 캔버스 + 판 캡션 + KST 자정 카운트다운.
+// SPEC §9.2 — `/` 지금 화면.
+// 정사각 캔버스 + 판 캡션 + 다음 분까지 카운트다운 (1분 주기로 변경).
 // 그림은 완성본을 툭 띄우지 않고 rAF로 그려지는 과정을 보여준다 (W2.4).
 
 import { setupSquareCanvas } from '../core/canvas';
-import { msUntilNextMidnightKST, todayKey } from '../core/date';
+import { msUntilNextMinute, plateKey } from '../core/date';
 import { rngFor } from '../core/rng';
 import { configFor, paramsFor } from '../params';
 import { resolveRender } from '../systems';
@@ -19,7 +19,7 @@ export function mountToday(root: HTMLElement): void {
   let countdownTimer: number | undefined;
 
   function show(): void {
-    const key = todayKey();
+    const key = plateKey();
     if (key === currentKey) return;
     currentKey = key;
 
@@ -68,12 +68,12 @@ export function mountToday(root: HTMLElement): void {
       }),
     );
 
-    // 카운트다운 — 매초 갱신, 자정을 넘으면 새 그림
+    // 카운트다운 — 매초 갱신, 분이 넘어가면 새 그림
     if (countdownTimer !== undefined) window.clearInterval(countdownTimer);
     const tickClock = (): void => {
-      const ms = msUntilNextMidnightKST();
+      const ms = msUntilNextMinute();
       countdown.textContent = `다음 장까지 ${formatMs(ms)}`;
-      if (todayKey() !== currentKey) show();
+      if (plateKey() !== currentKey) show();
     };
     tickClock();
     countdownTimer = window.setInterval(tickClock, 1000);
@@ -99,10 +99,6 @@ function startProgressiveRender(makeGen: () => Generator<void, void, void>): () 
 }
 
 function formatMs(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000));
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  const pad = (n: number): string => n.toString().padStart(2, '0');
-  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+  const s = Math.min(60, Math.max(0, Math.ceil(ms / 1000)));
+  return `${s.toString().padStart(2, '0')}초`;
 }

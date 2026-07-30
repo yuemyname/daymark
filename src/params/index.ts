@@ -7,7 +7,7 @@
 //   dateKey + ':render' — 렌더 전용 (systems/ 쪽에서 새로 만든다).
 // 같은 rng를 이어 쓰면 파라미터 하나를 추가하는 순간 그 뒤 모든 날이 바뀐다.
 
-import { addDays, diffDays, isValidDateKey } from '../core/date';
+import { addMinutes, isValidPlateKey } from '../core/date';
 import { rngFor, seedHexFor } from '../core/rng';
 import { paletteFor } from '../core/palette';
 import type {
@@ -29,10 +29,6 @@ const WEIGHTS: Record<SystemId, number> = {
   interference: 0.8,
 };
 
-// 직전 2일 회피는 이 날짜부터 순방향으로만 계산한다.
-// EPOCH 이전 날짜는 회피 없이 단독 추첨 — 기준점이 없으면 재귀가 끝나지 않는다.
-export const EPOCH = '2026-01-01';
-
 function drawWeighted(rng: () => number): SystemId {
   const total = SYSTEM_IDS.reduce((s, id) => s + WEIGHTS[id], 0);
   let t = rng() * total;
@@ -43,45 +39,28 @@ function drawWeighted(rng: () => number): SystemId {
   return SYSTEM_IDS[SYSTEM_IDS.length - 1] as SystemId;
 }
 
-/** 가중치 추첨 후, 직전 2일과 겹치면 재추첨 (최대 4회). */
-function drawSystem(rng: () => number, avoid: ReadonlySet<SystemId>): SystemId {
-  let picked = drawWeighted(rng);
+/** 해당 키의 "원추첨" — 회피 없이 첫 추첨만. 이웃 키의 회피 집합 계산에 쓴다. */
+function rawDraw(key: string): SystemId {
+  return drawWeighted(rngFor(key + ':system'));
+}
+
+/**
+ * 가중치 추첨 후, 직전 2분과 겹치면 재추첨 (최대 4회).
+ *
+ * 회피 집합은 직전 2분의 "원추첨"으로 만든다. 진짜 최종 선택으로 만들면
+ * 과거 전체를 재귀해야 해서 (분 단위에선 연간 52만 스텝) O(1)로 타협한 것.
+ * 원추첨과 최종이 달랐던 분 뒤에서는 드물게 연속 중복이 샐 수 있지만,
+ * 어떤 키에 대해서도 결과는 순수하게 결정적이다.
+ */
+export function systemFor(key: string): SystemId {
+  if (!isValidPlateKey(key)) throw new Error(`invalid plateKey: ${key}`);
+  const avoid = new Set<SystemId>([rawDraw(addMinutes(key, -1)), rawDraw(addMinutes(key, -2))]);
+  const rng = rngFor(key + ':system');
+  let picked = drawWeighted(rng); // 첫 추첨 == 이 키의 원추첨
   for (let i = 0; i < 4 && avoid.has(picked); i++) {
     picked = drawWeighted(rng);
   }
   return picked;
-}
-
-const systemMemo = new Map<string, SystemId>();
-
-/** 과거 날짜로부터 순수하게 계산되므로 결정성은 유지된다. */
-export function systemFor(dateKey: string): SystemId {
-  if (!isValidDateKey(dateKey)) throw new Error(`invalid dateKey: ${dateKey}`);
-  const cached = systemMemo.get(dateKey);
-  if (cached) return cached;
-
-  const gap = diffDays(EPOCH, dateKey);
-  if (gap <= 0) {
-    const sys = drawWeighted(rngFor(dateKey + ':system'));
-    systemMemo.set(dateKey, sys);
-    return sys;
-  }
-
-  // EPOCH부터 순방향으로 채운다. 재귀 대신 반복 — 수천 일이어도 싸다.
-  let prev1 = systemFor(addDays(EPOCH, 0));
-  let prev2: SystemId | null = null;
-  for (let i = 1; i <= gap; i++) {
-    const key = addDays(EPOCH, i);
-    let sys = systemMemo.get(key);
-    if (!sys) {
-      const avoid = new Set<SystemId>(prev2 ? [prev1, prev2] : [prev1]);
-      sys = drawSystem(rngFor(key + ':system'), avoid);
-      systemMemo.set(key, sys);
-    }
-    prev2 = prev1;
-    prev1 = sys;
-  }
-  return prev1;
 }
 
 // --- 시스템별 config 생성 (SPEC §6의 권장 범위) ---
@@ -175,18 +154,18 @@ export function configFor(system: SystemId, rng: () => number): SystemConfig {
   }
 }
 
-/** dateKey 하나로부터 그날의 모든 것이 결정된다. */
-export function paramsFor(dateKey: string): Params {
-  if (!isValidDateKey(dateKey)) throw new Error(`invalid dateKey: ${dateKey}`);
-  const system = systemFor(dateKey);
-  const paramRng = rngFor(dateKey + ':params');
+/** 판 키(분 단위) 하나로부터 그 판의 모든 것이 결정된다. */
+export function paramsFor(key: string): Params {
+  if (!isValidPlateKey(key)) throw new Error(`invalid plateKey: ${key}`);
+  const system = systemFor(key);
+  const paramRng = rngFor(key + ':params');
   const palette = paletteFor(paramRng);
   const config = configFor(system, paramRng);
   return {
-    dateKey,
+    dateKey: key,
     system,
     palette,
-    seedHex: seedHexFor(dateKey),
+    seedHex: seedHexFor(key),
     config,
   };
 }

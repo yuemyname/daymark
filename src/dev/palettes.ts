@@ -3,7 +3,7 @@
 // 대비 미달(ΔL < 0.35)인 카드는 빨간 테두리로 표시된다 — 0개여야 통과.
 
 import { oklch } from 'culori';
-import { addDays, todayKey } from '../core/date';
+import { addMinutes, plateKey } from '../core/date';
 import { MIN_DELTA_L, paletteFor } from '../core/palette';
 import { rngFor } from '../core/rng';
 
@@ -18,10 +18,10 @@ function deltaLOk(bg: string, ink: string): boolean {
 }
 
 let failCount = 0;
-const start = todayKey();
+const start = plateKey();
 
 for (let i = 0; i < 100; i++) {
-  const key = addDays(start, i);
+  const key = addMinutes(start, i);
   const palette = paletteFor(rngFor(key + ':params'));
 
   const bad = palette.inks.some((ink) => !deltaLOk(palette.bg, ink));

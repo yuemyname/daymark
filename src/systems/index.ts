@@ -2,7 +2,11 @@
 // 시스템 구현은 W2(subdivision)부터 하나씩 채운다.
 
 import type { Params, SystemId } from '../params/types';
+import { flowfield } from './flowfield';
+import { interference } from './interference';
+import { packing } from './packing';
 import { subdivision } from './subdivision';
+import { truchet } from './truchet';
 
 export type RenderArgs = {
   ctx: CanvasRenderingContext2D;
@@ -20,7 +24,11 @@ export type RenderArgs = {
 export type RenderFn = (a: RenderArgs) => Generator<void, void, void>;
 
 export const systems: Partial<Record<SystemId, RenderFn>> = {
+  flowfield,
+  packing,
+  truchet,
   subdivision,
+  interference,
 };
 
 /**
