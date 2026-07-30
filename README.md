@@ -22,7 +22,9 @@ dev 서버에서 `/palettes.html` — 팔레트 100개 검수 페이지 (W0.2, �
 ## 진행 상황
 
 - [x] W1 결정성 코어 — rng(cyrb128+sfc32), KST 날짜, OKLCH 팔레트(ΔL 가드), params 골격, 시스템 선택(직전 2일 회피), ESLint 결정성 규칙, L1 스냅샷 테스트
-- [ ] W2 수직 슬라이스 — canvas 헬퍼, S4 subdivision, `/` 오늘 화면, 점진 렌더, 배포
+- [x] W2 수직 슬라이스 — canvas 헬퍼(유닛 스케일 확정), S4 subdivision, `/` 오늘 화면(캡션+카운트다운), rAF 점진 렌더, 배포 설정(GitHub Pages 워크플로 + Netlify `_redirects`)
+  - 미구현 시스템은 subdivision으로 폴백 (W3에서 해소)
+  - 배포는 저장소 Settings → Pages → Source를 "GitHub Actions"로 켜야 활성화됨
 - [ ] W3 시스템 4종 (truchet / flowfield / interference / packing + dateGlyph)
 - [ ] W4 다듬기 — L2 트레이스 테스트, 90일 미리보기, 튜닝, 타이포
 - [ ] W5 아카이브

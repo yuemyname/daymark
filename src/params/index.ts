@@ -105,7 +105,7 @@ function r4(v: number): number {
   return Math.round(v * 10000) / 10000;
 }
 
-function configFor(system: SystemId, rng: () => number): SystemConfig {
+export function configFor(system: SystemId, rng: () => number): SystemConfig {
   switch (system) {
     case 'flowfield':
       return {
