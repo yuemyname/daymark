@@ -12,7 +12,7 @@ import { addMinutes, dayOf, plateKey } from '../core/date';
 import { rngFor } from '../core/rng';
 import { paramsFor } from '../params';
 import { plateHash } from '../router';
-import { resolveRender } from '../systems';
+import { renderPlanFor } from '../systems';
 
 const THUMB_CSS = 128;
 const BATCH = 60;
@@ -79,9 +79,8 @@ export function mountArchive(root: HTMLElement): () => void {
       ctx.drawImage(cached, 0, 0, size, size);
       return;
     }
-    const params = paramsFor(key);
-    const { fn } = resolveRender(params.system);
-    const gen = fn({ ctx, size, params, rng: rngFor(key + ':render') });
+    const plan = renderPlanFor(key, paramsFor(key));
+    const gen = plan.fn({ ctx, size, params: plan.params, rng: rngFor(key + ':render') });
     while (!gen.next().done) {
       /* 썸네일은 한 번에 끝까지 — 128px라 싸다 */
     }

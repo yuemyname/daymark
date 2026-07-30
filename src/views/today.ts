@@ -5,8 +5,8 @@
 import { setupSquareCanvas } from '../core/canvas';
 import { msUntilNextMinute, plateKey } from '../core/date';
 import { rngFor } from '../core/rng';
-import { configFor, paramsFor } from '../params';
-import { resolveRender } from '../systems';
+import { paramsFor } from '../params';
+import { renderPlanFor } from '../systems';
 import { startProgressiveRender } from './progressive';
 
 export function mountToday(root: HTMLElement): () => void {
@@ -20,16 +20,7 @@ export function mountToday(root: HTMLElement): () => void {
     currentKey = key;
 
     const params = paramsFor(key);
-    // 미구현 시스템이면 subdivision 폴백 (전 시스템 구현 후엔 항상 본인)
-    const { id: usedSystem, fn: render } = resolveRender(params.system);
-    const renderParams =
-      usedSystem === params.system
-        ? params
-        : {
-            ...params,
-            system: usedSystem,
-            config: configFor(usedSystem, rngFor(key + ':params:fallback')),
-          };
+    const plan = renderPlanFor(key, params);
     root.innerHTML = '';
     root.style.setProperty('--accent', params.palette.accent);
 
@@ -41,7 +32,7 @@ export function mountToday(root: HTMLElement): () => void {
 
     const caption = document.createElement('figcaption');
     caption.className = 'caption';
-    caption.append(`${key} · ${usedSystem.toUpperCase()} · `);
+    caption.append(`${key} · ${plan.id.toUpperCase()} · `);
     const seed = document.createElement('span');
     seed.className = 'seed';
     seed.textContent = params.seedHex;
@@ -59,10 +50,10 @@ export function mountToday(root: HTMLElement): () => void {
 
     cancelRender?.();
     cancelRender = startProgressiveRender(() =>
-      render({
+      plan.fn({
         ctx,
         size,
-        params: renderParams,
+        params: plan.params,
         rng: rngFor(key + ':render'),
       }),
     );

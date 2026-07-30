@@ -149,6 +149,40 @@
         width: 100%;
       }
       /* 판 상세 */
+      .export-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .export-label {
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+      .export-btn {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 5px 12px;
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid #ddd;
+        cursor: pointer;
+      }
+      .export-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .export-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .export-progress {
+        font-size: 12px;
+        color: var(--accent);
+        min-width: 3.5em;
+        font-variant-numeric: tabular-nums;
+      }
       .plate-json {
         font-size: 11px;
         line-height: 1.7;

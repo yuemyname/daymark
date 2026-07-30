@@ -32,4 +32,6 @@ dev 서버 전용 페이지 (프로덕션 빌드 제외):
   - 아카이브(W5)는 하루 1,440장 체제에 맞는 재설계 필요
 - [x] W4 다듬기 — L2 트레이스 스냅샷(5종), 90장 미리보기(`/plates.html?n=90`), 파라미터 튜닝(빈 subdivision·회색 죽 interference·격자 maze 해소), Fraunces + IBM Plex Mono + accent 크롬
 - [x] W5 아카이브 — 최근 판 그리드(무한 스크롤 + 날짜 구분선), 해시 라우팅(`#/archive`, `#/d/…`), IntersectionObserver 지연 렌더 + 프레임당 1칸 렌더 큐, ImageBitmap 캐시, 판 상세(큰 그림 + params JSON)
-- [ ] W6 PNG 내보내기 + 진행 표시
+- [x] W6 PNG 내보내기 — 판 상세에서 1024/2048/4096 선택, 드라이런 스텝 계수 기반 진행률, rAF 청크로 UI 무정지. 4096 산출물이 화면과 동일 구도임을 검수 완료
+
+**v1 전 구간 완료.** 남은 것: GitHub Pages 활성화(Settings → Pages → Source: GitHub Actions).

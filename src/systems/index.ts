@@ -1,7 +1,9 @@
 // SPEC §5 — SystemId → render 함수 레지스트리.
 // 시스템 구현은 W2(subdivision)부터 하나씩 채운다.
 
+import { configFor } from '../params';
 import type { Params, SystemId } from '../params/types';
+import { rngFor } from '../core/rng';
 import { flowfield } from './flowfield';
 import { interference } from './interference';
 import { packing } from './packing';
@@ -41,4 +43,21 @@ export function resolveRender(id: SystemId): { id: SystemId; fn: RenderFn } {
   const fn = systems[id];
   if (fn) return { id, fn };
   return { id: 'subdivision', fn: subdivision };
+}
+
+/**
+ * 뷰·내보내기 공용 — 렌더 함수와, 폴백 시 그에 맞게 재생성한 params를 돌려준다.
+ * (5종이 모두 구현된 지금은 사실상 항상 원본 그대로다)
+ */
+export function renderPlanFor(
+  key: string,
+  params: Params,
+): { id: SystemId; fn: RenderFn; params: Params } {
+  const { id, fn } = resolveRender(params.system);
+  if (id === params.system) return { id, fn, params };
+  return {
+    id,
+    fn,
+    params: { ...params, system: id, config: configFor(id, rngFor(key + ':params:fallback')) },
+  };
 }
